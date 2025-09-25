@@ -1,9 +1,8 @@
-h1 {
-    color: red;
-}
+@import 'components.css';
+
 body {
     background-color: grey;
 }
-navbar {
+header {
     margin: auto;
 }

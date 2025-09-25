@@ -1,0 +1,29 @@
+.site-header{
+    padding: 4px;
+}
+
+.header-content{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+.site-nav{
+    justify-content: center;
+    gap: 3rem;
+}
+.nav-link{
+    color: rgb(120, 100, 100);
+    margin: 0 1rem;
+    text-decoration: none;
+}
+.nav-link:hover{
+    color: rgb(197, 192, 192);
+    transform: translateY(-5px);
+}
+.header-image{
+    display: flex;
+    justify-content: right;
+    margin-top: 2rem;
+}
