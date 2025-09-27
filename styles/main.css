@@ -1,8 +1,24 @@
 @import 'components.css';
 
-body {
-    background-color: grey;
+html, body {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    height: auto;
 }
-header {
+.site-header {
     margin: auto;
+    background-color: grey;
+    padding: 80px 20px;
+    display: flex;
+    flex-direction: column;
+}
+.about-section{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+}
+.skills-section{
+    padding: 80px 20px;
 }
