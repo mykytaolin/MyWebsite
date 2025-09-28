@@ -111,9 +111,25 @@ document.addEventListener('DOMContentLoaded', function(){ // waiting for DOMCont
     const components = document.querySelectorAll('[data-component]'); // searching for every component that has data-component attribute
     // data-component HTML5 attribute that contains data
     // ex. <div data-component="header"></div>
-    components.forEach(async (element) => { // for each founded object
-        const componentName = element.getAttribute('data-component'); // get component name from data-component attribute
-        await window.componentLoader.renderComponent(element.id, componentName); // rendering component inside element
+    const componentPromises = Array.from(components).map(async (element) => {
+        const componentName = element.getAttribute('data-component');
+        const paramsJson = element.getAttribute('data-params');
+
+        let params = {};
+        if(paramsJson){
+            try{
+                params = JSON.parse(paramsJson);
+                console.log('Parsed params for', element.id, ':', params);
+            } catch(error){
+                console.error('JSON parse error for', element.id, ':', error);
+            }
+        }
+
+        console.log('Calling renderComponent with params', params);
+        await window.componentLoader.renderComponent(element.id, componentName, params); // rendering component inside element
         // await waiting for component for loading and rendering 
+    });
+    Promise.all(componentPromises).then(() => {
+        console.log('All components loaded');
     });
 });
