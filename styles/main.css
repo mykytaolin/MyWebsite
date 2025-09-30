@@ -2,13 +2,14 @@
 
 html, body {
     overflow-x: hidden;
+    background-color: #30333b;
     margin: 0;
     padding: 0;
     height: auto;
 }
 .site-header {
     margin: auto;
-    background-color: grey;
+    background-color: #30333b;
     padding: 80px 20px;
     display: flex;
     flex-direction: column;
