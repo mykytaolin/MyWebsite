@@ -144,3 +144,70 @@
     object-fit: contain;
     transition: all 0.3s ease;
 }
+.portfolio{
+    text-align: center;
+}
+.portfolio-h1{
+    color: white;
+    font-family: "Quicksand", sans-serif;
+    font-optical-sizing: auto;
+    font-size: 3.5rem;
+}
+.portfolio-grid{
+    column-gap: 5px;
+    row-gap: 5px;
+    max-width: 1200px;
+    justify-items: center;
+    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(3, auto);
+    margin: 0 auto;
+    padding: 10px;
+}
+
+.portfolio-grid > *:nth-child(1){grid-column: 1; grid-row: 1;}
+.portfolio-grid > *:nth-child(2){grid-column: 2; grid-row: 1;}
+.portfolio-grid > *:nth-child(3){grid-column: 3; grid-row: 1;}
+.portfolio-grid > *:nth-child(4){grid-column: 1; grid-row: 2;}
+.portfolio-grid > *:nth-child(5){grid-column: 2; grid-row: 2;}
+.portfolio-grid > *:nth-child(6){grid-column: 3; grid-row: 2;}
+
+
+.portfolio-grid > *{
+    justify-content: center;
+    display: flex;
+}
+.image-button{
+    flex-direction: column;
+    justify-content: center;
+    width: 256px;
+    height: 256px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: #3c3e42;
+    border: transparent;
+    border-radius: 25px;
+}
+.image-button-text{
+    font-family: "Quicksand", sans-serif;
+    font-size: 1.5rem;
+    font-style: bold;
+    color: transparent;
+}
+.image-button:hover{
+    background: rgb(236, 206, 106);
+    color: white;
+    transform: translateY(-2px);
+}
+.image-button:active{
+    background: rgb(236, 206, 106);
+    color: white;
+}
+.image-button-image{
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    transition: all 0.3s ease;
+}
