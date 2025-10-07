@@ -4,14 +4,24 @@ class ComponentLoader{ // main class component manager
         // key: component name, value: html code of component
     }
     async loadComponent(name){ // async func for loading components from file
+        console.log('Loading component:', name);
+
         if(this.components[name]){ // if component already loaded in cache
+            console.log('From cache:', name);
             return this.components[name]; // return that component
         }
         try{ // if not - loading from server
             const response = await fetch(`components/${name}.html`); // fetch send HTTP communication to server
+            console.log('Fetch response:', response.ok, response.status);
+            if(!response.ok){
+                throw new Error(`HTTP ${response.status}`); 
+            }
             // await - waiting for communication finishing
             // components/${name}.html = path to file ex. components/header.html
             const html = await response.text(); // changing response to HTML text
+            console.log('Loaded HTML length:', html.length);
+
+            this.components[name] = html;
             return html;
         }
         catch(error){ // raising error if component doesn't exist or have diff name
@@ -20,6 +30,12 @@ class ComponentLoader{ // main class component manager
         }
     }
     async renderComponent(containerId, componentName, params = {}){ // rendering in exect page element
+
+        console.log("Render component debug");
+        console.log('containerId:', containerId);
+        console.log('componanetName:', componentName);
+        console.log('params:', params);
+        console.log('params keys:', Object.keys(params));
         const container = document.getElementById(containerId); // finding DOM elem by using ID where we want to put in component
         //document.getElementById searching elem by id
         if(!container){ // if container doesn't exist
@@ -27,18 +43,43 @@ class ComponentLoader{ // main class component manager
             return;
         }
         let html = await this.loadComponent(componentName); // loading component from file or cache
+        console.log('HTML before raplace:', html);
+
         html = this.replaceParams(html, params); // changing placeholders {{}} to parameters
+        console.log('HTML after raplace:', html);
+
         container.innerHTML = html; // changing inner HTML in element to new HTML
+        console.log('Debug Finished');
 
         this.executeScripts(container); // exec scripts in component with this container
         this.attachButtonEvents(container); // exec scripts to deal with buttons
+        this.renderNestedComponents(container);
+
     }
     replaceParams(html, params){
         console.log("replaceParams called");
         console.log("HTML before: ", html);
         console.log("Params", params);
-        const result =  html.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-            console.log("Find placeholder: ", match, "Key: ", key);
+
+        if(!params || Object.keys(params).length === 0){
+            console.warn('No params for replacement');
+        }
+        let result = html;
+
+        for(const[key, value] of Object.entries(params)){
+            const placeholder = `{{${key}}}`;
+            console.log(`Looking for: ${placeholder}`);
+
+            if(result.includes(placeholder)) {
+                console.log(`Replacing ${placeholder} with ${value}`);
+                result = result.replace(new RegExp(placeholder, 'g'), value);
+            } else{
+                console.log(`Placeholder ${placeholder} not found`);
+            }
+        }
+
+        //const result =  html.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+            //console.log("Find placeholder: ", match, "Key: ", key);
             // REGEX that looking for match {{}}
             // \{\} looking for {{
             // (\w+) catching some words between\
@@ -48,15 +89,18 @@ class ComponentLoader{ // main class component manager
             // for every founded {{}}:
             // 'match' - it's all text ex. {{text}}
             // 'key' - catched name ex. "text"
-            const value = params[key] || match;
-            console.log("Replacing with: ", value);
-            return value;
+            //const value = params[key] || match;
+            //console.log("Replacing with: ", value);
+            //return value;
             // if key = "text" - params["text"] returns "Python" 
             // if key is undefined - return original {{name}}
             
-        });
+        //});
         console.log("HTML after: ", result);
         return result;
+    }
+    escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
     executeScripts(container){ // func to exec script finded in component
@@ -101,8 +145,46 @@ class ComponentLoader{ // main class component manager
                 }
             })
         })
+
+        const footerButtons = container.querySelectorAll('.footer-button');
+        footerButtons.forEach(button => {
+            button.addEventListener('click', function(){
+                const action = this.getAttribute('data-action');
+                if(action){
+                    console.log('Footer button clicked: ', action);
+                }
+            });
+        });
     }
-    
+    renderNestedComponents(container) {
+        console.log('Looking for nested components in:', container.id || 'container');
+        
+        const nestedComponents = container.querySelectorAll('[data-component]');
+        console.log('Found nested components:', nestedComponents.length);
+        
+        nestedComponents.forEach(async (element) => {
+            const componentName = element.getAttribute('data-component');
+            const paramsJson = element.getAttribute('data-params');
+            
+            console.log(`Rendering nested: ${element.id} -> ${componentName}`);
+
+            let params = {};
+            if (paramsJson) {
+                try {
+                    params = JSON.parse(paramsJson);
+                } catch (error) {
+                    console.error('JSON parse error for nested', element.id, ':', error);
+                }
+            }
+
+            try {
+                await this.renderComponent(element.id, componentName, params);
+                console.log(`Nested component loaded: ${element.id}`);
+            } catch (error) {
+                console.error(`Failed to load nested ${element.id}:`, error);
+            }   
+    });
+}
 }
 
 window.componentLoader = new ComponentLoader(); //Global init of ComponentLoader class
